@@ -75,8 +75,7 @@ public class Day03 implements Solution {
         }
       }
     }
-    long r = calcSum(batteries);
-    return r;
+    return calcSum(batteries);
   }
 
   @Override
