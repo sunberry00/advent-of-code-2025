@@ -49,18 +49,48 @@ public class Day03 implements Solution {
             .toList())
         .toList();
 
-
-    int sum = intBanks
+    return intBanks
         .stream()
         .mapToInt(this::findMaxJoltage)
         .sum();
+  }
 
+  private long calcSum(int[] batteries) {
+    long sum = 0;
+    for (int i = 0; i < 12; ++i) {
+      sum += (long) (Math.pow(10, 11 - i) * batteries[i]);
+    }
     return sum;
+  }
+
+  private long findTwelveBiggestJoltage(List<Integer> bank) {
+    int[] batteries = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    int[] batIndex = {0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    for (int i = 0; i < 12; ++i) {
+      for (int j = i == 0 ? i : batIndex[i - 1] + 1; j < bank.size() - 11 + i; ++j) {
+        int current = bank.get(j);
+        if (current > batteries[i]) {
+          batteries[i] = current;
+          batIndex[i] = j;
+        }
+      }
+    }
+    long r = calcSum(batteries);
+    return r;
   }
 
   @Override
   public Object part2() {
-    return null;
+    List<String> banks = InputUtils.readLines("2025", "day03");
+        List<List<Integer>> intBanks = banks.stream()
+        .map(bank -> Arrays
+            .stream(bank.split(""))
+            .mapToInt(Integer::parseInt)
+            .boxed()
+            .toList())
+        .toList();
+
+        return intBanks.stream().mapToLong(this::findTwelveBiggestJoltage).sum();
   }
 
   public static void main(String[] args) {
