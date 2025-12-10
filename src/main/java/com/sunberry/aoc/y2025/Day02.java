@@ -1,10 +1,7 @@
 package com.sunberry.aoc.y2025;
 
-import static java.lang.Long.parseLong;
-
 import com.sunberry.aoc.Solution;
 import com.sunberry.aoc.utils.InputUtils;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -43,6 +40,26 @@ public class Day02 implements Solution {
 
   }
 
+    private boolean isInvalidIdAtLeastTwoTimes(String id) {
+    int length = id.length();
+    List<Integer> dividers = IntStream
+        .range(1, length / 2 + 1)
+        .filter(x -> length % x == 0)
+        .boxed()
+        .toList();
+
+
+    for (int divider : dividers) {
+      String newId = id.substring(0, divider).repeat(length / divider);
+      if (newId.equals(id)) {
+        return true;
+      }
+    }
+
+    return false;
+
+  }
+
 
   @Override
   public Object part1() {
@@ -67,7 +84,23 @@ public class Day02 implements Solution {
 
   @Override
   public Object part2() {
-    return null;
+    String input = InputUtils.readString("2025", "day02");
+    List<Range> ranges = Arrays.stream(input.split(","))
+        .map(idRange -> idRange.split("-"))
+        .map(ids -> new Range(ids[0].strip(), ids[1].strip()))
+        .toList();
+
+    long sum = 0;
+    for (Range range : ranges) {
+      for (long i = Long.parseLong(range.firstID); i <= Long.parseLong(range.secondID); ++i) {
+        String id = String.valueOf(i);
+        if (isInvalidIdAtLeastTwoTimes(id)) {
+          sum += Long.parseLong(id);
+        }
+      }
+    }
+
+    return sum;
   }
 
   public static void main(String[] args) {
