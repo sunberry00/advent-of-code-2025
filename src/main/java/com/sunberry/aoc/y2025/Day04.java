@@ -2,7 +2,10 @@ package com.sunberry.aoc.y2025;
 
 import com.sunberry.aoc.Solution;
 import com.sunberry.aoc.utils.InputUtils;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class Day04 implements Solution {
 
@@ -69,9 +72,48 @@ public class Day04 implements Solution {
     return count;
   }
 
+  private List<int[]> processGrid(List<String> grid) {
+    List<int[]> points = new ArrayList<>();
+    for (int i = 0; i < grid.size(); ++i) {
+      for (int j = 0; j < grid.get(i).length(); ++j) {
+        char current = grid.get(i).charAt(j);
+        if (current == '@') {
+          int n = getNeighbours(i, j, grid);
+          if (n < 4) {
+            points.add(new int[]{i, j});
+          }
+        }
+      }
+    }
+    return points;
+  }
+
+  private List<String> removeRolls(List<String> grid, List<int[]> points) {
+    List<String> resultGrid = new ArrayList<>(grid);
+    for (int i = 0; i < points.size(); ++i) {
+      int x = points.get(i)[0];
+      int y = points.get(i)[1];
+      StringBuilder row = new StringBuilder(resultGrid.get(x));
+      row.replace(y, y + 1, ".");
+      resultGrid.set(x, row.toString());
+    }
+    return resultGrid;
+  }
+
   @Override
   public Object part2() {
-    return null;
+    List<String> grid = InputUtils.readLines("2025", "day04");
+    int count = 0;
+    int sum = 0;
+    List<String> newGrid = List.copyOf(grid);
+    do {
+      var points = processGrid(grid);
+      sum += points.size();
+      newGrid = removeRolls(newGrid, points);
+      count = points.size();
+      grid = newGrid;
+    } while (count != 0);
+    return sum;
   }
 
   public static void main(String[] args) {
